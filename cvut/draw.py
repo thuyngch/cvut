@@ -56,3 +56,33 @@ def draw_inst_masks(image, masks):
 		image_[mask==1] = image_[mask==1] * 0.5 + color_mask * 0.5
 
 	return image_
+
+
+#------------------------------------------------------------------------------
+#  draw_track
+#------------------------------------------------------------------------------
+np.random.seed(0)
+COLOR_DICT = dict()
+for i in range(256):
+	color = np.random.randint(0, 256, (3,), dtype='uint8')
+	COLOR_DICT[i] = tuple(color.tolist())
+
+def draw_track(image, bboxes, ids, thickness=1,
+			font=cv2.FONT_HERSHEY_SIMPLEX, fontsize=0.5, text_thickness=2):
+	"""
+	image (np.uint8) of shape [H,W,3], RGB image
+	bboxes (np.int/np.float/list) of shape [N,4], format [x1, y1, x2, y2]
+	ids (np.int/np.float/list) of shape [N]
+	"""
+	assert len(bboxes) == len(ids), \
+		"len(bboxes)={} vs. len(ids)={}".format(len(bboxes), len(ids))
+
+	image_ = image.copy()
+	for bbox, track_id in zip(bboxes, ids):
+		x1, y1, x2, y2 = [int(ele) for ele in bbox]
+		color = COLOR_DICT[track_id % len(COLOR_DICT)]
+		cv2.rectangle(image_, (x1,y1), (x2,y2), color, thickness=thickness)
+		cv2.putText(
+			image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
+			font, fontsize, color, thickness=text_thickness)
+	return image_
