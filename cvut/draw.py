@@ -6,6 +6,12 @@ import numpy as np
 
 
 #------------------------------------------------------------------------------
+#  Constant
+#------------------------------------------------------------------------------
+_FONT = cv2.FONT_HERSHEY_SIMPLEX
+
+
+#------------------------------------------------------------------------------
 #  draw_bboxes
 #------------------------------------------------------------------------------
 def draw_bboxes(image, bboxes, color=(0,255,0), thickness=1):
@@ -68,7 +74,7 @@ for i in range(256):
 	COLOR_DICT[i] = tuple(color.tolist())
 
 def draw_track(image, bboxes, ids, thickness=1,
-			font=cv2.FONT_HERSHEY_SIMPLEX, fontsize=0.5, text_thickness=2):
+			font=_FONT, font_size=0.5, text_thickness=2):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
 	bboxes (np.int/np.float/list) of shape [N,4], format [x1, y1, x2, y2]
@@ -85,4 +91,25 @@ def draw_track(image, bboxes, ids, thickness=1,
 		cv2.putText(
 			image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
 			font, fontsize, color, thickness=text_thickness)
+	return image_
+
+
+#------------------------------------------------------------------------------
+#  draw_keypoints
+#------------------------------------------------------------------------------
+def draw_keypoints(image, points_list, scale=1.0, radius=1,
+				thickness=1, font=_FONT, font_size=0.5):
+	"""
+	image (np.uint8) of shape [H,W,3], RGB image
+	points_list (list) of shape [num_points,3], format [x,y,visible]
+	"""
+	image_ = image.copy()
+	for points in points_list:
+		color = np.random.randint(0, 256, (3,)).tolist()
+		for point_id, point in enumerate(points):
+			x, y, visible = [int(scale * ele) for ele in point]
+			if visible!=0:
+				image_ = cv2.circle(image_, (x,y), radius, color, -1)
+				image_ = cv2.putText(image_, str(point_id+1),
+					(x,y), font, font_size, color, thickness)
 	return image_
