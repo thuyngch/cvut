@@ -40,7 +40,7 @@ def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0,255,0),
 			cv2.rectangle(image_, (x1,y1), (x2,y2), color, thickness=thickness)
 			if classnames is not None:
 				cv2.putText(
-					image_, classnames[label], (int((x1+x2)/2), int((y1+y2)/2)),
+					image_, classnames[label], (x1,y1-2),
 					font, font_size, color, thickness=text_thickness)
 	return image_
 
