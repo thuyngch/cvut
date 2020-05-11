@@ -39,7 +39,7 @@ def draw_polygons(image, polygons, color=(0,255,0), thickness=1):
 		polygons = np.array(polygons).astype(int).reshape((-1,1,2))
 	else:
 		polygons = polygons.astype(int).reshape((-1,1,2))
-	cv.polylines(image_, [polygons], True, color, thickness=thickness)
+	cv2.polylines(image_, [polygons], True, color, thickness=thickness)
 	return image_
 
 
