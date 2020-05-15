@@ -13,8 +13,9 @@ _FONT = cv2.FONT_HERSHEY_SIMPLEX
 np.random.seed(0)
 COLOR_DICT = dict()
 for i in range(256):
-	color = np.random.randint(0, 256, (3,), dtype='uint8')
-	COLOR_DICT[i] = tuple(color.tolist())
+	_color_random = np.random.randint(0, 256, (3,), dtype='uint8')
+	COLOR_DICT[i] = tuple(_color_random.tolist())
+COLOR_LEN = len(COLOR_DICT)
 
 
 #------------------------------------------------------------------------------
@@ -35,13 +36,14 @@ def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0,255,0),
 			cv2.rectangle(image_, (x1,y1), (x2,y2), color, thickness=thickness)
 	else:
 		for bbox, label in zip(bboxes, labels):
-			color = COLOR_DICT[label % len(COLOR_DICT)] if color is None else color
+			color_idx = int(label % COLOR_LEN)
+			_color = COLOR_DICT[color_idx] if color is None else color
 			x1, y1, x2, y2 = [int(ele) for ele in bbox]
-			cv2.rectangle(image_, (x1,y1), (x2,y2), color, thickness=thickness)
+			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
 			if classnames is not None:
 				cv2.putText(
 					image_, classnames[label], (x1,y1-2),
-					font, font_size, color, thickness=text_thickness)
+					font, font_size, _color, thickness=text_thickness)
 	return image_
 
 
@@ -98,11 +100,11 @@ def draw_track(image, bboxes, ids, thickness=1,
 	image_ = image.copy()
 	for bbox, track_id in zip(bboxes, ids):
 		x1, y1, x2, y2 = [int(ele) for ele in bbox]
-		color = COLOR_DICT[track_id % len(COLOR_DICT)]
-		cv2.rectangle(image_, (x1,y1), (x2,y2), color, thickness=thickness)
+		_color = COLOR_DICT[track_id % len(COLOR_DICT)]
+		cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
 		cv2.putText(
 			image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
-			font, font_size, color, thickness=text_thickness)
+			font, font_size, _color, thickness=text_thickness)
 	return image_
 
 
