@@ -51,14 +51,13 @@ def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0,255,0),
 def draw_polygons(image, polygons, color=(0,255,0), thickness=1):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
-	bboxes (np.int/np.float/list) of shape [N,2], format [x, y]
+	polygons (list) of polygon of shape [N,2], format [x, y]
 	"""
 	image_ = image.copy()
-	if isinstance(polygons, list):
-		polygons = np.array(polygons).astype(int).reshape((-1,1,2))
-	else:
-		polygons = polygons.astype(int).reshape((-1,1,2))
-	cv2.polylines(image_, [polygons], True, color, thickness=thickness)
+	for idx, polygon in enumerate(polygons):
+		polygon = polygon.astype(int).reshape((-1,1,2))
+		_color = COLOR_DICT[idx%COLOR_LEN] if color is None else color
+		cv2.polylines(image_, [polygon], True, _color, thickness=thickness)
 	return image_
 
 
