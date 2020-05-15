@@ -57,8 +57,9 @@ def draw_polygons(image, polygons, color=(0,255,0), thickness=1):
 	"""
 	image_ = image.copy()
 	for idx, polygon in enumerate(polygons):
+		color_idx = int(idx % COLOR_LEN)
+		_color = COLOR_DICT[color_idx] if color is None else color
 		polygon = polygon.astype(int).reshape((-1,1,2))
-		_color = COLOR_DICT[idx%COLOR_LEN] if color is None else color
 		cv2.polylines(image_, [polygon], True, _color, thickness=thickness)
 	return image_
 
