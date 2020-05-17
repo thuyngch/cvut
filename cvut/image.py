@@ -1,3 +1,4 @@
+import mmcv
 import numpy as np
 
 
@@ -18,3 +19,11 @@ def imdenormalize(image, mean, std, scale_255=True):
 	else:
 		image = np.clip(image * std + mean, 0, 255).astype('uint8')
 	return image
+
+
+#------------------------------------------------------------------------------
+#  imwrite
+#------------------------------------------------------------------------------
+def imwrite(image, outfile):
+	mmcv.imwrite(image, outfile)
+	print("[cvut] Image is saved at {}".format(outfile))

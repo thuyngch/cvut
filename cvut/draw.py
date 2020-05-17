@@ -112,7 +112,7 @@ def draw_track(image, bboxes, ids, thickness=1,
 #------------------------------------------------------------------------------
 #  draw_keypoints
 #------------------------------------------------------------------------------
-def draw_keypoints(image, points_list, scale=1.0, radius=1,
+def draw_keypoints(image, points_list, scale=1.0, radius=1, color=(0,255,0),
 				thickness=1, font=_FONT, font_size=0.5):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
@@ -120,11 +120,11 @@ def draw_keypoints(image, points_list, scale=1.0, radius=1,
 	"""
 	image_ = image.copy()
 	for points in points_list:
-		color = np.random.randint(0, 256, (3,)).tolist()
+		_color = np.random.randint(0, 256, (3,)).tolist() if color is None else color
 		for point_id, point in enumerate(points):
 			x, y, visible = [int(scale * ele) for ele in point]
 			if visible!=0:
-				image_ = cv2.circle(image_, (x,y), radius, color, -1)
+				image_ = cv2.circle(image_, (x,y), radius, _color, -1)
 				image_ = cv2.putText(image_, str(point_id+1),
-					(x,y), font, font_size, color, thickness)
+					(x,y), font, font_size, _color, thickness)
 	return image_
