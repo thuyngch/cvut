@@ -86,6 +86,28 @@ def draw_inst_masks(image, masks):
 
 
 #------------------------------------------------------------------------------
+#  draw_masks_overlay
+#------------------------------------------------------------------------------
+def draw_masks_overlay(image, masks):
+	"""
+	image (np.uint8) of shape [H,W,3], RGB image
+	masks (np.int/np.uint8/np.bool/np.float) of shape [N,H,W], value in range [0;1]
+	"""
+	image_ = image.copy()
+
+	np.random.seed(0)
+	color_masks = [
+		np.random.randint(0, 256, (3,), dtype='uint8')
+		for _ in range(len(masks))]
+
+	for mask, color_mask in zip(masks, color_masks):
+		mask = (mask[...,None] * color_mask[None,None,...]).astype('uint8')
+		cv2.add(image_, mask, image_)
+
+	return image_
+
+
+#------------------------------------------------------------------------------
 #  draw_track
 #------------------------------------------------------------------------------
 def draw_track(image, bboxes, ids, thickness=1,
