@@ -110,24 +110,37 @@ def draw_masks_overlay(image, masks):
 #------------------------------------------------------------------------------
 #  draw_track
 #------------------------------------------------------------------------------
-def draw_track(image, bboxes, ids, thickness=1,
+def draw_track(image, bboxes, ids, labels=None, classnames=None, thickness=1,
 			font=_FONT, font_size=0.5, text_thickness=2):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
 	bboxes (np.int/np.float/list) of shape [N,4], format [x1, y1, x2, y2]
 	ids (np.int/np.float/list) of shape [N]
+	labels (np.int/list) of shape [N,], start-from-0. None is not used.
+	classnames (list) of string, len [N,]. None is not used.
 	"""
+	image_ = image.copy()
 	assert len(bboxes) == len(ids), \
 		"len(bboxes)={} vs. len(ids)={}".format(len(bboxes), len(ids))
 
-	image_ = image.copy()
-	for bbox, track_id in zip(bboxes, ids):
-		x1, y1, x2, y2 = [int(ele) for ele in bbox]
-		_color = COLOR_DICT[track_id % len(COLOR_DICT)]
-		cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
-		cv2.putText(
-			image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
-			font, font_size, _color, thickness=text_thickness)
+	if (labels is None) and (classnames is None):
+		for bbox, track_id in zip(bboxes, ids):
+			x1, y1, x2, y2 = [int(ele) for ele in bbox]
+			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
+			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
+			cv2.putText(
+				image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
+				font, font_size, _color, thickness=text_thickness)
+	else:
+		for bbox, track_id, label in zip(bboxes, ids, labels):
+			x1, y1, x2, y2 = [int(ele) for ele in bbox]
+			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
+			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
+			text = "cls{}-ID{}".format(label, track_id) if classnames is None \
+				else "{}-ID{}".format(classnames[label], track_id)
+			cv2.putText(
+				image_, text, (int((x1+x2)/2), int((y1+y2)/2)),
+				font, font_size, _color, thickness=text_thickness)
 	return image_
 
 
