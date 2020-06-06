@@ -106,7 +106,6 @@ def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 	for mask, color_mask in zip(masks, color_masks):
 		mask_overlay = (mask[...,None] * color_mask[None,None,...]).astype('uint8')
 		image_[mask==1,...] = alpha * image[mask==1,...] + (1-alpha) * mask_overlay[mask==1,...]
-		# cv2.add(image_, mask, image_)
 
 	return image_
 
@@ -146,7 +145,7 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
 				image_, text, (int((x1+x2)/2), int((y1+y2)/2)),
 				font, font_size, _color, thickness=text_thickness)
 	
-	if mask is not None:
+	if masks is not None:
 		for track_id, mask in zip(ids, masks):
 			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
 			image_ = draw_masks_overlay(
@@ -159,7 +158,7 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
 #  draw_keypoints
 #------------------------------------------------------------------------------
 def draw_keypoints(image, points_list, scale=1.0, radius=1, color=(0,255,0),
-				put_test=False, font=_FONT, font_size=0.5, font_thickness=1):
+				put_text=False, font=_FONT, font_size=0.5, font_thickness=1):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
 	points_list (list) of shape [num_points,3] format [x,y,visible], or [num_points,2]
@@ -176,7 +175,7 @@ def draw_keypoints(image, points_list, scale=1.0, radius=1, color=(0,255,0),
 
 			if visible!=0:
 				image_ = cv2.circle(image_, (x,y), radius, _color, -1)
-				if put_test:
+				if put_text:
 					image_ = cv2.putText(image_, str(point_id+1),
 						(x,y), font, font_size, _color, font_thickness)
 	return image_
