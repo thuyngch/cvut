@@ -88,7 +88,7 @@ def draw_inst_masks(image, masks):
 #------------------------------------------------------------------------------
 #  draw_masks_overlay
 #------------------------------------------------------------------------------
-def draw_masks_overlay(image, masks):
+def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
 	masks (np.int/np.uint8/np.bool/np.float) of shape [N,H,W], value in range [0;1]
@@ -96,13 +96,17 @@ def draw_masks_overlay(image, masks):
 	image_ = image.copy()
 
 	np.random.seed(0)
-	color_masks = [
-		np.random.randint(0, 256, (3,), dtype='uint8')
-		for _ in range(len(masks))]
+	if color is not None:
+		color_masks = [np.array(color)] * len(masks)
+	else:
+		color_masks = [
+			np.random.randint(0, 256, (3,), dtype='uint8')
+			for _ in range(len(masks))]
 
 	for mask, color_mask in zip(masks, color_masks):
-		mask = (mask[...,None] * color_mask[None,None,...]).astype('uint8')
-		cv2.add(image_, mask, image_)
+		mask_overlay = (mask[...,None] * color_mask[None,None,...]).astype('uint8')
+		image_[mask==1,...] = alpha * image[mask==1,...] + (1-alpha) * mask_overlay[mask==1,...]
+		# cv2.add(image_, mask, image_)
 
 	return image_
 
@@ -110,7 +114,7 @@ def draw_masks_overlay(image, masks):
 #------------------------------------------------------------------------------
 #  draw_track
 #------------------------------------------------------------------------------
-def draw_track(image, bboxes, ids, thickness=1,
+def draw_track(image, bboxes, ids, masks=None, thickness=1,
 			font=_FONT, font_size=0.5, text_thickness=2):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
@@ -121,13 +125,23 @@ def draw_track(image, bboxes, ids, thickness=1,
 		"len(bboxes)={} vs. len(ids)={}".format(len(bboxes), len(ids))
 
 	image_ = image.copy()
-	for bbox, track_id in zip(bboxes, ids):
-		x1, y1, x2, y2 = [int(ele) for ele in bbox]
-		_color = COLOR_DICT[track_id % len(COLOR_DICT)]
-		cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
-		cv2.putText(
-			image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
-			font, font_size, _color, thickness=text_thickness)
+	if masks is None:
+		for bbox, track_id in zip(bboxes, ids):
+			x1, y1, x2, y2 = [int(ele) for ele in bbox]
+			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
+			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
+			cv2.putText(
+				image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
+				font, font_size, _color, thickness=text_thickness)
+	else:
+		for bbox, track_id, mask in zip(bboxes, ids, masks):
+			x1, y1, x2, y2 = [int(ele) for ele in bbox]
+			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
+			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
+			image_ = draw_masks_overlay(image_, np.expand_dims(mask, axis=0), color=_color)
+			cv2.putText(
+				image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
+				font, font_size, _color, thickness=text_thickness)
 	return image_
 
 
