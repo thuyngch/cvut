@@ -22,7 +22,7 @@ COLOR_LEN = len(COLOR_DICT)
 #  draw_bboxes
 #------------------------------------------------------------------------------
 def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0,255,0),
-			thickness=1, font=_FONT, font_size=0.5, text_thickness=2):
+			thickness=1, font=_FONT, font_size=0.5, font_thickness=2):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
 	bboxes (np.int/np.float/list) of shape [N,4], format [x1, y1, x2, y2]
@@ -43,7 +43,7 @@ def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0,255,0),
 			if classnames is not None:
 				cv2.putText(
 					image_, classnames[label], (x1,y1-2),
-					font, font_size, _color, thickness=text_thickness)
+					font, font_size, _color, thickness=font_thickness)
 	return image_
 
 
@@ -114,7 +114,7 @@ def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 #  draw_track
 #------------------------------------------------------------------------------
 def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
-			thickness=1, font=_FONT, font_size=0.5, text_thickness=1):
+			thickness=1, font=_FONT, font_size=0.5, font_thickness=1):
 	"""
 	image (np.uint8) of shape [H,W,3], RGB image
 	bboxes (np.int/np.float/list) of shape [N,4], format [x1, y1, x2, y2]
@@ -133,7 +133,7 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
 			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
 			cv2.putText(
 				image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
-				font, font_size, _color, thickness=text_thickness)
+				font, font_size, _color, thickness=font_thickness)
 	else:
 		for bbox, track_id, label in zip(bboxes, ids, labels):
 			x1, y1, x2, y2 = [int(ele) for ele in bbox]
@@ -143,7 +143,7 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
 				else "{}-ID{}".format(classnames[label], track_id)
 			cv2.putText(
 				image_, text, (int((x1+x2)/2), int((y1+y2)/2)),
-				font, font_size, _color, thickness=text_thickness)
+				font, font_size, _color, thickness=font_thickness)
 	
 	if masks is not None:
 		for track_id, mask in zip(ids, masks):
