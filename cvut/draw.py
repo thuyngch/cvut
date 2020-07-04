@@ -165,7 +165,8 @@ def draw_keypoints(image, points_list, scale=1.0, radius=1, color=(0,255,0),
 	"""
 	image_ = image.copy()
 	for points in points_list:
-		_color = np.random.randint(0, 256, (3,)).tolist() if color is None else color
+		color_idx = int(idx % COLOR_LEN)
+		_color = COLOR_DICT[color_idx] if color is None else color
 		for point_id, point in enumerate(points):
 			if len(point) == 3:
 				x, y, visible = [int(scale * ele) for ele in point]
