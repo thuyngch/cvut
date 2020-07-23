@@ -164,7 +164,7 @@ def draw_keypoints(image, points_list, scale=1.0, radius=1, color=(0,255,0),
 	points_list (list) of shape [num_points,3] format [x,y,visible], or [num_points,2]
 	"""
 	image_ = image.copy()
-	for points in points_list:
+	for idx, points in enumerate(points_list):
 		color_idx = int(idx % COLOR_LEN)
 		_color = COLOR_DICT[color_idx] if color is None else color
 		for point_id, point in enumerate(points):
