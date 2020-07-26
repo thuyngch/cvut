@@ -74,12 +74,8 @@ def draw_inst_masks(image, masks):
 	"""
 	image_ = image.copy()
 
-	np.random.seed(42)
-	color_masks = [
-		np.random.randint(0, 256, (1, 3), dtype='uint8')
-		for _ in range(len(masks))]
-
-	for mask, color_mask in zip(masks, color_masks):
+	for idx, mask in enumerate(masks):
+		color_mask = np.array(COLOR_DICT[idx])
 		image_[mask==1] = image_[mask==1] * 0.5 + color_mask * 0.5
 
 	return image_
