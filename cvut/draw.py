@@ -24,9 +24,9 @@ COLOR_LEN = len(COLOR_DICT)
 def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0,255,0),
 			thickness=1, font=_FONT, font_size=0.5, font_thickness=2):
 	"""
-	image (np.uint8) of shape [H,W,3], RGB image
-	bboxes (np.int/np.float/list) of shape [N,4], format [x1, y1, x2, y2]
-	labels (np.int/list) of shape [N,], start-from-0
+	image (np.uint8) shape [H,W,3], RGB image
+	bboxes (np.int/np.float/list) shape [N,4], format [x1, y1, x2, y2]
+	labels (np.int/list) shape [N,], start-from-0
 	classnames (list) of string, len [N,]
 	"""
 	image_ = image.copy()
@@ -52,8 +52,8 @@ def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0,255,0),
 #------------------------------------------------------------------------------
 def draw_polygons(image, polygons, color=(0,255,0), thickness=1):
 	"""
-	image (np.uint8) of shape [H,W,3], RGB image
-	polygons (list) of polygon of shape [N,2], format [x, y]
+	image (np.uint8) shape [H,W,3], RGB image
+	polygons (list) of polygon shape [N,2], format [x, y]
 	"""
 	image_ = image.copy()
 	for idx, polygon in enumerate(polygons):
@@ -67,15 +67,19 @@ def draw_polygons(image, polygons, color=(0,255,0), thickness=1):
 #------------------------------------------------------------------------------
 #  draw_inst_masks
 #------------------------------------------------------------------------------
-def draw_inst_masks(image, masks):
+def draw_inst_masks(image, masks, color=None):
 	"""
-	image (np.uint8) of shape [H,W,3], RGB image
-	masks (np.int/np.uint8/np.bool) of shape [N,H,W], value in {0;1}
+	image (np.uint8) shape [H,W,3], RGB image
+	masks (np.int/np.uint8/np.bool) shape [N,H,W], value in {0;1}
 	"""
 	image_ = image.copy()
 
 	for idx, mask in enumerate(masks):
-		color_mask = np.array(COLOR_DICT[idx])
+		if color is not None:
+			color_mask = np.array(color)
+		else:
+			color_mask = np.array(COLOR_DICT[idx])
+
 		image_[mask==1] = image_[mask==1] * 0.5 + color_mask * 0.5
 
 	return image_
@@ -86,8 +90,8 @@ def draw_inst_masks(image, masks):
 #------------------------------------------------------------------------------
 def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 	"""
-	image (np.uint8) of shape [H,W,3], RGB image
-	masks (np.int/np.uint8/np.bool/np.float) of shape [N,H,W], value in range [0;1]
+	image (np.uint8) shape [H,W,3], RGB image
+	masks (np.int/np.uint8/np.bool/np.float) shape [N,H,W], value in range [0;1]
 	"""
 	image_ = image.copy()
 
@@ -100,8 +104,10 @@ def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 			for _ in range(len(masks))]
 
 	for mask, color_mask in zip(masks, color_masks):
-		mask_overlay = (mask[...,None] * color_mask[None,None,...]).astype('uint8')
-		image_[mask==1,...] = alpha * image[mask==1,...] + (1-alpha) * mask_overlay[mask==1,...]
+		mask_overlay = (mask[...,None] * color_mask[None,None,...])
+		mask_overlay = mask_overlay.astype('uint8')
+		image_[mask==1,...] = alpha * image[mask==1,...] + \
+			(1-alpha) * mask_overlay[mask==1,...]
 
 	return image_
 
@@ -112,10 +118,10 @@ def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
 			thickness=1, font=_FONT, font_size=0.5, font_thickness=1):
 	"""
-	image (np.uint8) of shape [H,W,3], RGB image
-	bboxes (np.int/np.float/list) of shape [N,4], format [x1, y1, x2, y2]
-	ids (np.int/np.float/list) of shape [N]
-	labels (np.int/list) of shape [N,], start-from-0. None is not used.
+	image (np.uint8) shape [H,W,3], RGB image
+	bboxes (np.int/np.float/list) shape [N,4], format [x1, y1, x2, y2]
+	ids (np.int/np.float/list) shape [N]
+	labels (np.int/list) shape [N,], start-from-0. None is not used.
 	classnames (list) of string, len [N,]. None is not used.
 	"""
 	image_ = image.copy()
@@ -127,8 +133,8 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
 			x1, y1, x2, y2 = [int(ele) for ele in bbox]
 			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
 			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
-			cv2.putText(
-				image_, "ID{}".format(track_id), (int((x1+x2)/2), int((y1+y2)/2)),
+			cv2.putText(image_, "ID{}".format(track_id),
+				(int((x1+x2)/2), int((y1+y2)/2)),
 				font, font_size, _color, thickness=font_thickness)
 	else:
 		for bbox, track_id, label in zip(bboxes, ids, labels):
@@ -156,8 +162,8 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
 def draw_keypoints(image, points_list, scale=1.0, radius=1, color=(0,255,0),
 				put_text=False, font=_FONT, font_size=0.5, font_thickness=1):
 	"""
-	image (np.uint8) of shape [H,W,3], RGB image
-	points_list (list) of shape [num_points,3] format [x,y,visible], or [num_points,2]
+	image (np.uint8) shape [H,W,3], RGB image
+	points_list (list) shape [num_points,3] format [x,y,visible]/[num_points,2]
 	"""
 	image_ = image.copy()
 	for idx, points in enumerate(points_list):
