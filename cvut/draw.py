@@ -159,17 +159,25 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None, masks=None,
 #------------------------------------------------------------------------------
 #  draw_keypoints
 #------------------------------------------------------------------------------
-def draw_keypoints(image, points_list, scale=1.0, radius=1, color=(0,255,0),
+def draw_keypoints(image, points_list, ids=None,
+				scale=1.0, radius=1, color=(0,255,0),
 				put_text=False, font=_FONT, font_size=0.5, font_thickness=1):
 	"""
 	image (np.uint8) shape [H,W,3], RGB image
 	points_list (list) shape [num_points,3] format [x,y,visible]/[num_points,2]
 	"""
 	image_ = image.copy()
-	for idx, points in enumerate(points_list):
-		color_idx = int(idx % COLOR_LEN)
+	for idx in range(len(points_list)):
+
+		if ids is not None:
+			color_idx = int(ids[idx] % COLOR_LEN)
+		else:
+			color_idx = int(idx % COLOR_LEN)
 		_color = COLOR_DICT[color_idx] if color is None else color
+
+		points = points_list[idx]
 		for point_id, point in enumerate(points):
+
 			if len(point) == 3:
 				x, y, visible = [int(scale * ele) for ele in point]
 			else:
