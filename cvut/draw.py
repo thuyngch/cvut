@@ -100,7 +100,7 @@ def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 		color_masks = [np.array(color)] * len(masks)
 	else:
 		color_masks = [
-			np.random.randint(0, 256, (3,), dtype='uint8')
+			np.random.randint(0, 256, (3,), dtype='float32')
 			for _ in range(len(masks))]
 
 	for mask, color_mask in zip(masks, color_masks):
