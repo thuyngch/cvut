@@ -4,7 +4,7 @@ Computer Vision UTils
 
 ## Installation
 ```bash
-pip install git+https://github.com/thuyngch/cvut
+pip install --upgrade git+https://github.com/thuyngch/cvut
 ```
 
 
