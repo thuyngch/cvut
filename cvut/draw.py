@@ -116,53 +116,55 @@ def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 #  draw_track
 #------------------------------------------------------------------------------
 def draw_track(image, bboxes, ids, labels=None, classnames=None,
-	       masks=None, polygons=None, thickness=1,
-	       font=_FONT, font_size=0.5, font_thickness=1):
-	"""
-	image (np.uint8) shape [H,W,3], RGB image
-	bboxes (np.int/np.float/list) shape [N,4], format [x1, y1, x2, y2]
-	ids (np.int/np.float/list) shape [N]
-	labels (np.int/list) shape [N,], start-from-0. None is not used.
-	classnames (list) of string, len [N,]. None is not used.
-	masks (np.int/np.float/list) [N, H, W]
-	polygons (list) list of [K, 2]
-	"""
-	image_ = image.copy()
-	assert len(bboxes) == len(ids), \
-		"len(bboxes)={} vs. len(ids)={}".format(len(bboxes), len(ids))
+               masks=None, polygons=None, thickness=1,
+               font=_FONT, font_size=0.5, font_thickness=1):
+    """
+    image (np.uint8) shape [H,W,3], RGB image
+    bboxes (np.int/np.float/list) shape [N,4], format [x1, y1, x2, y2]
+    ids (np.int/np.float/list) shape [N]
+    labels (np.int/list) shape [N,], start-from-0. None is not used.
+    classnames (list) of string, len [N,]. None is not used.
+    masks (np.int/np.float/list) [N, H, W]
+    polygons (list) list of [K, 2]
+    """
+    image_ = image.copy()
 
-	if labels is None:
-		for bbox, track_id in zip(bboxes, ids):
-			x1, y1, x2, y2 = [int(ele) for ele in bbox]
-			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
-			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
-			cv2.putText(image_, "ID{}".format(track_id),
-				(int((x1+x2)/2), int((y1+y2)/2)),
-				font, font_size, _color, thickness=font_thickness)
-	else:
-		for bbox, track_id, label in zip(bboxes, ids, labels):
-			x1, y1, x2, y2 = [int(ele) for ele in bbox]
-			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
-			cv2.rectangle(image_, (x1,y1), (x2,y2), _color, thickness=thickness)
-			text = "cls{}-ID{}".format(label, track_id) if classnames is None \
-				else "{}-ID{}".format(classnames[label], track_id)
-			cv2.putText(
-				image_, text, (int((x1+x2)/2), int((y1+y2)/2)),
-				font, font_size, _color, thickness=font_thickness)
+    if bboxes is not None:
+        if labels is None:
+            for bbox, track_id in zip(bboxes, ids):
+                x1, y1, x2, y2 = [int(ele) for ele in bbox]
+                _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+                cv2.rectangle(image_, (x1, y1), (x2, y2),
+                              _color, thickness=thickness)
+                cv2.putText(image_, "ID{}".format(track_id),
+                            (int((x1+x2)/2), int((y1+y2)/2)),
+                            font, font_size, _color, thickness=font_thickness)
+        else:
+            for bbox, track_id, label in zip(bboxes, ids, labels):
+                x1, y1, x2, y2 = [int(ele) for ele in bbox]
+                _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+                cv2.rectangle(image_, (x1, y1), (x2, y2),
+                              _color, thickness=thickness)
+                text = "cls{}-ID{}".format(label, track_id) if classnames is None \
+                    else "{}-ID{}".format(classnames[label], track_id)
+                cv2.putText(
+                    image_, text, (int((x1+x2)/2), int((y1+y2)/2)),
+                    font, font_size, _color, thickness=font_thickness)
 
-	if masks is not None:
-		for track_id, mask in zip(ids, masks):
-			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
-			image_ = draw_masks_overlay(
-				image_, np.expand_dims(mask, axis=0), color=_color)
+    if masks is not None:
+        for track_id, mask in zip(ids, masks):
+            _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+            image_ = draw_masks_overlay(
+                image_, np.expand_dims(mask, axis=0), color=_color)
 
-	if polygons is not None:
-		for track_id, polygon in zip(ids, polygons):
-			_color = COLOR_DICT[track_id % len(COLOR_DICT)]
-			image_ = draw_polygons(
-				image_, [polygon], color=_color, thickness=thickness)
+    if polygons is not None:
+        for track_id, polygon in zip(ids, polygons):
+            _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+            image_ = draw_polygons(
+                image_, [polygon], color=_color, thickness=thickness)
 
-	return image_
+    return image_
+
 
 
 #------------------------------------------------------------------------------
