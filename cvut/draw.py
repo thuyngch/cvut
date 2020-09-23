@@ -146,7 +146,7 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None,
                         font, font_size, _color, thickness=font_thickness)
     else:
         for bbox, track_id, label in zip(bboxes, ids, labels):
-			label = int(label)
+            label = int(label)
             x1, y1, x2, y2 = [int(ele) for ele in bbox]
             _color = COLOR_DICT[track_id % len(COLOR_DICT)]
             cv2.rectangle(image_, (x1, y1), (x2, y2),
