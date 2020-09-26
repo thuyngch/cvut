@@ -131,8 +131,6 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None,
     polygons (list) list of [K, 2]
     """
     image_ = image.copy()
-    assert len(bboxes) == len(ids), \
-        "len(bboxes)={} vs. len(ids)={}".format(len(bboxes), len(ids))
 
     if labels is None:
         for bbox, track_id in zip(bboxes, ids):
