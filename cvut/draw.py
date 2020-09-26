@@ -132,29 +132,30 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None,
     """
     image_ = image.copy()
 
-    if labels is None:
-        for bbox, track_id in zip(bboxes, ids):
-            track_id = int(track_id)
-            x1, y1, x2, y2 = [int(ele) for ele in bbox]
-            _color = COLOR_DICT[track_id % len(COLOR_DICT)]
-            cv2.rectangle(image_, (x1, y1), (x2, y2),
-                          _color, thickness=thickness)
-            cv2.putText(image_, "ID{}".format(track_id),
-                        (int((x1+x2)/2), int((y1+y2)/2)),
-                        font, font_size, _color, thickness=font_thickness)
-    else:
-        for bbox, track_id, label in zip(bboxes, ids, labels):
-            label = int(label)
-            track_id = int(track_id)
-            x1, y1, x2, y2 = [int(ele) for ele in bbox]
-            _color = COLOR_DICT[track_id % len(COLOR_DICT)]
-            cv2.rectangle(image_, (x1, y1), (x2, y2),
-                          _color, thickness=thickness)
-            text = "cls{}-ID{}".format(label, track_id) if classnames is None \
-                else "{}-ID{}".format(classnames[label], track_id)
-            cv2.putText(
-                image_, text, (int((x1+x2)/2), int((y1+y2)/2)),
-                font, font_size, _color, thickness=font_thickness)
+    if bboxes is not None:
+        if labels is None:
+            for bbox, track_id in zip(bboxes, ids):
+                track_id = int(track_id)
+                x1, y1, x2, y2 = [int(ele) for ele in bbox]
+                _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+                cv2.rectangle(image_, (x1, y1), (x2, y2),
+                              _color, thickness=thickness)
+                cv2.putText(image_, "ID{}".format(track_id),
+                            (int((x1+x2)/2), int((y1+y2)/2)),
+                            font, font_size, _color, thickness=font_thickness)
+        else:
+            for bbox, track_id, label in zip(bboxes, ids, labels):
+                label = int(label)
+                track_id = int(track_id)
+                x1, y1, x2, y2 = [int(ele) for ele in bbox]
+                _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+                cv2.rectangle(image_, (x1, y1), (x2, y2),
+                              _color, thickness=thickness)
+                text = "cls{}-ID{}".format(label, track_id) if classnames is None \
+                    else "{}-ID{}".format(classnames[label], track_id)
+                cv2.putText(
+                    image_, text, (int((x1+x2)/2), int((y1+y2)/2)),
+                    font, font_size, _color, thickness=font_thickness)
 
     if masks is not None:
         for track_id, mask in zip(ids, masks):
