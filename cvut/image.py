@@ -13,7 +13,7 @@ def impt2np(image):
 #------------------------------------------------------------------------------
 #  imdenormalize
 #------------------------------------------------------------------------------
-def imdenormalize(image, mean, std, scale_255=True):
+def imdenormalize(image, mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], scale_255=False):
 	if scale_255:
 		image = np.clip(((image * std + mean) * 255.), 0, 255).astype('uint8')
 	else:
