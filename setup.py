@@ -5,8 +5,7 @@ setuptools.setup(
 	version='0.0.1',
 	packages=setuptools.find_packages(),
 	install_requires=[
-		'cython', 'numpy', 'opencv-python', 'sklearn', 'pandas',
-		'ipython', 'pylint', 'ipympl', 'pyyaml', 'tqdm', 'future',
+		'numpy', 'pycocotools', 'mmcv', 'opencv-python',
 	],
 	python_requires='>=3.6',
 )
