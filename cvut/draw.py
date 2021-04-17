@@ -206,3 +206,25 @@ def draw_keypoints(image, points_list, ids=None,
                     image_ = cv2.putText(image_, str(point_id+1),
                                          (x, y), font, font_size, _color, font_thickness)
     return image_
+
+
+# ------------------------------------------------------------------------------
+#  draw_reid
+# ------------------------------------------------------------------------------
+def draw_reid(img_files, sims, topk=10, h=200, w=100, color=(0, 255, 0),
+              font=_FONT, font_size=0.8, font_thickness=1):
+    num_imgs = len(img_files)
+    topk = min(topk, num_imgs)
+    imgs = [cv2.imread(img_file) for img_file in img_files]
+
+    total_img = np.zeros([h*num_imgs, w*topk, 3])
+    for i in range(len(imgs)):
+        sort_ids = np.argsort(-sims[i])[:topk]
+        for j in range(topk):
+            img_j = cv2.resize(imgs[sort_ids[j]], (w, h))
+            cv2.putText(
+                img_j, "{:.2f}".format(sims[i][sort_ids[j]]), (w//5, h//3),
+                _FONT, font_size, color, thickness=font_thickness)
+            total_img[i*h:(i+1)*h, j*w:(j+1)*w] = img_j
+
+    return total_img
