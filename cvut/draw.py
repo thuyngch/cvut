@@ -212,7 +212,7 @@ def draw_keypoints(image, points_list, ids=None,
 #  draw_reid
 # ------------------------------------------------------------------------------
 def draw_reid(img_files, sims, topk=10, h=200, w=100, color=(0, 255, 0),
-              font=_FONT, font_size=0.8, font_thickness=1):
+              font=_FONT, font_size=0.8, font_thickness=2):
     num_imgs = len(img_files)
     topk = min(topk, num_imgs)
     imgs = [cv2.imread(img_file) for img_file in img_files]
