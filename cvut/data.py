@@ -40,6 +40,10 @@ class FIFOQueue(object):
                 return False
         return True
 
+    @property
+    def data(self):
+        return self.queue
+
     def reset(self):
         self.queue = self.queue_len * [None]
 
