@@ -42,7 +42,7 @@ class FIFOQueue(object):
 
     @property
     def data(self):
-        return self.queue
+        return [item for item in self.queue if item is not None]
 
     def reset(self):
         self.queue = self.queue_len * [None]
