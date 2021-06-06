@@ -2,8 +2,12 @@
 #  Libraries
 # ------------------------------------------------------------------------------
 import cv2
-import mmcv
 import numpy as np
+
+
+__all__ = ["draw_bboxes", "draw_keypoints",
+           "draw_inst_masks", "draw_masks_overlay", "draw_polygons",
+           "draw_reid", "draw_track"]
 
 
 # ------------------------------------------------------------------------------
