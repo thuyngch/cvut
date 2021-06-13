@@ -4,18 +4,24 @@
 import os
 import cv2
 import logging
-from time import gmtime, strftime
+from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 
+__all__ = ["Logger", "get_time_now"]
 
-__all__ = ["Logger"]
+
+# ------------------------------------------------------------------------------
+#  Utils
+# ------------------------------------------------------------------------------
+def get_time_now(fmt="%Y-%m-%d-%H-%M-%S"):
+    return datetime.now().strftime(fmt)
 
 
 # ------------------------------------------------------------------------------
 #   Logger
 # ------------------------------------------------------------------------------
 class Logger(logging.Logger):
-    def __init__(self, logname, logdir=None, when='D', backupCount=7*5*12):
+    def __init__(self, logname, logdir=None, when='H', backupCount=24*7):
         # Workdir
         self.logname = logname
         self.logdir = logdir
@@ -27,7 +33,7 @@ class Logger(logging.Logger):
 
         # Create logger
         formatter = logging.Formatter(
-            "%(asctime)s-%(levelname)s-%(lineno)d: %(message)s")
+            "%(asctime)s-%(levelname)s-%(name)s-%(filename)s-%(lineno)d: %(message)s")
 
         if logdir is not None:
             logfile = os.path.join(logdir, "%s.log" % (logname))
@@ -52,24 +58,27 @@ class Logger(logging.Logger):
 
     def log_error(self, image):
         self.error_id += 1
-        filename = "%d-%s.jpg" % (self.error_id,
-                                  strftime("%Y-%m-%d-%H:%M:%S", gmtime()))
-        image_file = self.save_image(image, cate='error', filename=filename)
+        filename = "{}-{}.jpg".format(self.error_id, get_time_now())
+        img_file = self.save_image(image, cate='error', filename=filename)
         self.info("Image yielding the Error-%d is saved at %s" %
-                  (self.error_id, image_file))
+                  (self.error_id, img_file))
 
-    def save_image(self, image, cate=None, filename=None):
+    def save_image(self, image, cate=None, sub_cate=None,
+                   filename=None, sep_date=False):
         if cate is not None:
             folder = os.path.join(self.logdir, cate)
+            if sep_date:
+                folder = os.path.join(folder, get_time_now("%Y-%m-%d"))
+            if sub_cate is not None:
+                folder = os.path.join(folder, sub_cate)
             os.makedirs(folder, exist_ok=True)
         else:
             folder = self.logdir
 
         if filename is not None:
-            image_file = os.path.join(folder, filename)
+            img_file = os.path.join(folder, filename)
         else:
-            image_file = os.path.join(folder, "%s.jpg" % (
-                strftime("%Y-%m-%d-%H:%M:%S", gmtime())))
+            img_file = os.path.join(folder, "{}.jpg".format(get_time_now()))
 
-        cv2.imwrite(image_file, image[..., ::-1])
-        return image_file
+        cv2.imwrite(img_file, image)
+        return img_file
