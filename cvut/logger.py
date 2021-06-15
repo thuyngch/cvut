@@ -4,6 +4,7 @@
 import os
 import cv2
 import logging
+import numpy as np
 from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 
@@ -56,15 +57,16 @@ class Logger(logging.Logger):
             self.info("Logger \'{}\' will be written at {}".format(
                 self.logname, logfile))
 
-    def log_error(self, image):
+    def log_error(self, img):
         self.error_id += 1
         filename = "{}-{}.jpg".format(self.error_id, get_time_now())
-        img_file = self.save_image(image, cate='error', filename=filename)
+        img_file = self.save_img(img, cate='error', filename=filename)
         self.info("Image yielding the Error-%d is saved at %s" %
                   (self.error_id, img_file))
 
-    def save_image(self, image, cate=None, sub_cate=None,
-                   filename=None, sep_date=False):
+    def save_img(self, img, embed=None, cate=None, sub_cate=None,
+                 filename=None, sep_date=False):
+        # get folder
         if cate is not None:
             folder = os.path.join(self.logdir, cate)
             if sep_date:
@@ -75,10 +77,16 @@ class Logger(logging.Logger):
         else:
             folder = self.logdir
 
+        # get img_file
         if filename is not None:
             img_file = os.path.join(folder, filename)
         else:
             img_file = os.path.join(folder, "{}.jpg".format(get_time_now()))
 
-        cv2.imwrite(img_file, image)
+        # save img and embed
+        cv2.imwrite(img_file, img)
+        if embed is not None:
+            embed_file = img_file.replace('.jpg', '.npy')
+            np.save(embed_file, embed)
+
         return img_file
