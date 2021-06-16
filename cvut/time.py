@@ -1,5 +1,5 @@
 import time
-from datetime import date, datetime
+from datetime import datetime
 
 __all__ = ["Timer", "get_time_now", "str2time"]
 
