@@ -1,6 +1,21 @@
 import time
+from datetime import date, datetime
 
-__all__ = ["Timer"]
+__all__ = ["Timer", "get_time_now", "str2time"]
+
+
+# ------------------------------------------------------------------------------
+#  Utils
+# ------------------------------------------------------------------------------
+def get_time_now(to_str=True, fmt="%Y-%m-%d-%H-%M-%S"):
+    cur_time = datetime.now()
+    if to_str:
+        cur_time = cur_time.strftime(fmt)
+    return cur_time
+
+
+def str2time(str_time, fmt="%Y-%m-%d-%H-%M-%S"):
+    return datetime.strptime(str_time, fmt)
 
 
 # ------------------------------------------------------------------------------

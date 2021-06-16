@@ -1,6 +1,6 @@
 from .data import *
 from .draw import *
-from .timer import *
+from .time import *
 from .image import *
 from .video import *
 from .logger import *

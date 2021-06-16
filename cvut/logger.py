@@ -5,17 +5,11 @@ import os
 import cv2
 import logging
 import numpy as np
-from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 
-__all__ = ["Logger", "get_time_now"]
+from .time import get_time_now
 
-
-# ------------------------------------------------------------------------------
-#  Utils
-# ------------------------------------------------------------------------------
-def get_time_now(fmt="%Y-%m-%d-%H-%M-%S"):
-    return datetime.now().strftime(fmt)
+__all__ = ["Logger"]
 
 
 # ------------------------------------------------------------------------------
