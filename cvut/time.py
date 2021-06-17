@@ -10,7 +10,7 @@ __all__ = ["TIME_FMT", "get_time_now", "str2time", "Timer"]
 TIME_FMT = "%Y-%m-%d-%H-%M-%S"
 
 
-def get_time_now(to_str=True, fmt=TIME_FMT):
+def get_time_now(fmt=TIME_FMT, to_str=True):
     cur_time = datetime.now()
     if to_str:
         cur_time = cur_time.strftime(fmt)
