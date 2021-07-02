@@ -26,12 +26,15 @@ COLOR_LEN = len(COLOR_DICT)
 # ------------------------------------------------------------------------------
 #  draw_bboxes
 # ------------------------------------------------------------------------------
-def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0, 255, 0),
-                thickness=1, font=_FONT, font_size=0.5, font_thickness=2):
+def draw_bboxes(image, bboxes,
+                labels=None, scores=None, classnames=None,
+                color=(0, 255, 0), thickness=1,
+                font=_FONT, font_size=0.5, font_thickness=2):
     """
     image (np.uint8) shape [H,W,3], RGB image
     bboxes (np.int/np.float/list) shape [N,4], format [x1, y1, x2, y2]
     labels (np.int/list) shape [N,], start-from-0
+    scores (np.float/list) shape [N,]
     classnames (list) of string, len [N,]
     """
     image_ = image.copy()
@@ -41,16 +44,23 @@ def draw_bboxes(image, bboxes, labels=None, classnames=None, color=(0, 255, 0),
             cv2.rectangle(image_, (x1, y1), (x2, y2),
                           color, thickness=thickness)
     else:
-        for bbox, label in zip(bboxes, labels):
+        scores = [None] * len(bboxes) if scores is None else scores
+        for bbox, label, score in zip(bboxes, labels, scores):
+            # select color
             color_idx = int(label % COLOR_LEN)
             _color = COLOR_DICT[color_idx] if color is None else color
+            # draw bbox
             x1, y1, x2, y2 = [int(ele) for ele in bbox]
             cv2.rectangle(image_, (x1, y1), (x2, y2),
                           _color, thickness=thickness)
-            if classnames is not None:
-                cv2.putText(
-                    image_, classnames[label], (x1, y1-2),
-                    font, font_size, _color, thickness=font_thickness)
+            # build text
+            text = "obj" if classnames is None else classnames[label]
+            if score is not None:
+                text += "|{:.2f}".format(score)
+            # draw text
+            cv2.putText(
+                image_, text, (x1, y1-2),
+                font, font_size, _color, thickness=font_thickness)
     return image_
 
 
