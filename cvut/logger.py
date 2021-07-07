@@ -9,17 +9,17 @@ from logging.handlers import TimedRotatingFileHandler
 
 from .time import get_time_now
 
-__all__ = ["Logger", "get_basename"]
+__all__ = ["Logger", "basename"]
 
 
 # ------------------------------------------------------------------------------
 #  Utils
 # ------------------------------------------------------------------------------
-def get_basename(filepath, wo_fmt=False):
-    basename = os.path.basename(filepath)
+def basename(filepath, wo_fmt=False):
+    bname = os.path.basename(filepath)
     if wo_fmt:
-        basename = '.'.join(basename.split('.')[:-1])
-    return basename
+        bname = '.'.join(bname.split('.')[:-1])
+    return bname
 
 
 # ------------------------------------------------------------------------------
