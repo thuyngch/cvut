@@ -23,6 +23,6 @@ def create_video(out_file, out_size, fps=30):
     dirname = os.path.dirname(out_file)
     os.makedirs(dirname, exist_ok=True)
 
-    fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
     out = cv2.VideoWriter(out_file, fourcc, fps, out_size)
     return out
