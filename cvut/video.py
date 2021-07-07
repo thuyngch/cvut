@@ -2,7 +2,7 @@ import os
 import cv2
 
 
-__all__ = ["setup_cv2_window", "create_video"]
+__all__ = ["setup_cv2_window", "get_video", "create_video"]
 
 
 # ------------------------------------------------------------------------------
@@ -17,6 +17,15 @@ def setup_cv2_window(winname, focus=True, loc=None):
             winname, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.setWindowProperty(
             winname, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_NORMAL)
+
+
+def get_video(video_file):
+    cap = cv2.VideoCapture(video_file)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    return cap, (width, height), num_frames, fps
 
 
 def create_video(out_file, out_size, fps=30):
