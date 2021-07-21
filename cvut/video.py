@@ -1,8 +1,11 @@
 import os
 import cv2
+from time import time, sleep
+from threading import Thread, Lock
 
 
-__all__ = ["setup_cv2_window", "get_video", "create_video"]
+__all__ = ["setup_cv2_window", "get_video", "create_video",
+           "StreamVideoCapture"]
 
 
 # ------------------------------------------------------------------------------
@@ -34,3 +37,52 @@ def create_video(out_file, out_size, fps=30):
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
     out = cv2.VideoWriter(out_file, fourcc, fps, out_size)
     return out
+
+
+class StreamVideoCapture(object):
+    """Realtime RTSP stream, dealing with latency"""
+    lock = Lock()
+    last_ready = False
+
+    def __init__(self, cap_or_link_or_path, sleep_time=0, num_runs_get_fps=-1):
+        self.sleep_time = sleep_time
+
+        # video capture
+        if isinstance(cap_or_link_or_path, str):
+            self.cap = cv2.VideoCapture(cap_or_link_or_path)
+        else:
+            self.cap = cap_or_link_or_path
+
+        # measure fps
+        if num_runs_get_fps != -1:
+            fps = self._get_fps(num_runs_get_fps)
+            print("Stream FPS:", fps)
+            self.sleep_time = 1 / fps
+
+        # run thread
+        thread = Thread(target=self._run)
+        thread.daemon = True
+        thread.start()
+        sleep(1)
+
+    def read(self):
+        if self.last_ready:
+            status, frame = self.cap.retrieve()
+            return status, frame
+        else:
+            return False, None
+
+    def _run(self):
+        while True:
+            with self.lock:
+                self.last_ready = self.cap.grab()
+            sleep(self.sleep_time)
+
+    def _get_fps(self, num_runs=100):
+        print("Measuring stream...")
+        tic = time()
+        for _ in range(num_runs):
+            self.cap.grab()
+        runtime = time() - tic
+        fps = num_runs / runtime
+        return fps
