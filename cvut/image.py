@@ -47,4 +47,4 @@ def glob_imgs(img_dir, num_imgs=-1):
     # limit number of images
     if (num_imgs is not None) and (num_imgs != -1):
         img_files = img_files[:num_imgs]
-    return num_imgs
+    return img_files
