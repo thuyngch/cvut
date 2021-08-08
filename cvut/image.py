@@ -39,9 +39,13 @@ def imwrite(image, outfile):
 # ------------------------------------------------------------------------------
 #  glob_imgs
 # ------------------------------------------------------------------------------
-def glob_imgs(img_dir, num_imgs=-1):
+def glob_imgs(img_dir, num_imgs=-1, recursive=False):
     # get list of img files
-    img_files = sorted(glob(os.path.join(img_dir, "*.*")))
+    if not recursive:
+        img_files = sorted(glob(os.path.join(img_dir, "*.*")))
+    else:
+        img_files = sorted(glob(
+            os.path.join(img_dir, "**/*.*"), recursive=True))
     img_files = [img_file for img_file in img_files
                  if img_file.split('.')[-1].lower() in SUPPORT_IMG_FORMATS]
     # limit number of images
