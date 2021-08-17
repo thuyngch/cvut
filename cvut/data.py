@@ -14,6 +14,8 @@ __all__ = ['FIFOQueue',
 #  FIFOQueue
 # ------------------------------------------------------------------------------
 class FIFOQueue(object):
+    """First-In-First-Out Queue"""
+
     def __init__(self, queue_len):
         self.queue = queue_len * [None]
         self.queue_len = queue_len
@@ -37,8 +39,8 @@ class FIFOQueue(object):
         uniq_item = self.queue[0]
         for item in self.queue[1:]:
             if item != uniq_item:
-                return False
-        return True
+                return False, uniq_item
+        return True, uniq_item
 
     @property
     def data(self):
