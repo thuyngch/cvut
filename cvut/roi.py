@@ -13,8 +13,14 @@ class RoIFilter(object):
     MODES = ['center', 'bottom_center', 'top_center']
 
     def __init__(self, roi):
-        self.roi = Polygon([tuple(item)
-                            for item in np.array(roi).reshape(-1, 2).tolist()])
+        if isinstance(roi, list):
+            self.roi = Polygon([
+                tuple(item)
+                for item in np.array(roi).reshape(-1, 2).tolist()])
+        elif isinstance(roi, np.ndarray):
+            self.roi = Polygon([
+                tuple(item)
+                for item in roi.reshape(-1, 2).tolist()])
 
     def __call__(self, bboxes, mode='bottom_center'):
         """Check whether bboxes in RoI"""
