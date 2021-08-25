@@ -12,7 +12,10 @@ class RoIFilter(object):
 
     MODES = ['center', 'bottom_center', 'top_center']
 
-    def __init__(self, roi):
+    def __init__(self, roi, mode):
+        assert mode in self.MODES
+        self.mode = mode
+
         if isinstance(roi, list):
             self.roi = Polygon([
                 tuple(item)
@@ -22,10 +25,9 @@ class RoIFilter(object):
                 tuple(item)
                 for item in roi.reshape(-1, 2).tolist()])
 
-    def __call__(self, bboxes, mode='bottom_center'):
+    def __call__(self, bboxes):
         """Check whether bboxes in RoI"""
-        assert mode in self.MODES
-        points = [self._get_point(x1, y1, x2, y2, mode)
+        points = [self._get_point(x1, y1, x2, y2, self.mode)
                   for (x1, y1, x2, y2) in bboxes[:, :4]]
         points = [Point(x, y) for (x, y) in points]
 
