@@ -44,7 +44,12 @@ class StreamVideoCapture(object):
     lock = Lock()
     last_ready = False
 
-    def __init__(self, cap_or_link_or_path, sleep_time=0, num_runs_get_fps=-1):
+    def __init__(self,
+                 cap_or_link_or_path,
+                 max_wait=100,
+                 sleep_time=0,
+                 num_runs_get_fps=-1):
+        self.max_wait = max_wait
         self.sleep_time = sleep_time
 
         # video capture
@@ -66,11 +71,22 @@ class StreamVideoCapture(object):
         sleep(1)
 
     def read(self):
-        if self.last_ready:
-            status, frame = self.cap.retrieve()
-            return status, frame
-        else:
-            return False, None
+        wait = 0
+        while True:
+            if self.last_ready:
+                status, frame = self.cap.retrieve()
+                if status:
+                    return status, frame
+                else:
+                    wait += 1
+                    if wait >= self.max_wait:
+                        print("Exceed max_wait={}".format(self.max_wait))
+                        return False, None
+            else:
+                wait += 1
+                if wait >= self.max_wait:
+                    print("Exceed max_wait={}".format(self.max_wait))
+                    return False, None
 
     def _run(self):
         while True:
