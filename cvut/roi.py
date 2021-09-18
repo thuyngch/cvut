@@ -2,6 +2,8 @@ import numpy as np
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
+from .draw import draw_polygons
+
 __all__ = ['RoIFilter']
 
 
@@ -12,22 +14,21 @@ class RoIFilter(object):
 
     MODES = ['center', 'bottom_center', 'top_center', 'intersect']
 
-    def __init__(self, roi, mode, intersect_thr=0.1):
+    def __init__(self, points, mode,
+                 hroi=None, wroi=None, aroi=None, intersect_thr=0.1):
         assert mode in self.MODES
         self.mode = mode
+        self.hroi = hroi
+        self.wroi = wroi
+        self.aroi = aroi
         self.intersect_thr = intersect_thr
 
-        if isinstance(roi, list):
-            self.roi = Polygon([
-                tuple(item)
-                for item in np.array(roi).reshape(-1, 2).tolist()])
-        elif isinstance(roi, np.ndarray):
-            self.roi = Polygon([
-                tuple(item)
-                for item in roi.reshape(-1, 2).tolist()])
+        self.points = np.array(points).reshape(-1, 2)
+        self.roi = Polygon([tuple(item) for item in self.points.tolist()])
 
     def __call__(self, bboxes):
         """Check whether bboxes in RoI"""
+        # check in roi
         if self.mode != 'intersect':
             points = [self._get_point(x1, y1, x2, y2, self.mode)
                       for (x1, y1, x2, y2) in bboxes[:, :4]]
@@ -43,7 +44,24 @@ class RoIFilter(object):
                                 for query_polygon in query_polygons]
             inroi_inds = [ratio >= self.intersect_thr
                           for ratio in intersect_ratios]
-        return np.array(inroi_inds)
+        inroi_inds = np.array(inroi_inds)
+
+        # check hroi, wroi, aroi
+        hs = bboxes[:, 3] - bboxes[:, 1]
+        ws = bboxes[:, 2] - bboxes[:, 0]
+        ars = ws / (hs + 1e-6)
+        if self.hroi:
+            inroi_inds *= (hs >= self.hroi[0]) * (hs <= self.hroi[1])
+        if self.wroi:
+            inroi_inds *= (ws >= self.wroi[0]) * (ws <= self.wroi[1])
+        if self.aroi:
+            inroi_inds *= (ars >= self.aroi[0]) * (ars <= self.aroi[1])
+
+        return inroi_inds
+
+    def draw_roi(self, image, **kwargs):
+        image = draw_polygons(image, [self.points], **kwargs)
+        return image
 
     def _get_point(self, x1, y1, x2, y2, mode):
         if mode == 'center':
