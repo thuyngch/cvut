@@ -4,7 +4,8 @@ import numpy as np
 from glob import glob
 
 
-__all__ = ["impt2np", "imdenormalize", "imwrite", "glob_imgs", "glob_folders"]
+__all__ = ["impt2np", "imdenormalize", "imwrite",
+           "glob_imgs", "glob_folders", "glob_files"]
 
 SUPPORT_IMG_FORMATS = ['jpg', 'jpeg', 'png']
 
@@ -66,4 +67,16 @@ def glob_folders(root_dir, recursive=False):
     else:
         folders = sorted(glob(
             os.path.join(root_dir, "**/**"), recursive=True))
+    return folders
+
+
+# ------------------------------------------------------------------------------
+#  glob_files
+# ------------------------------------------------------------------------------
+def glob_files(root_dir, fmt, recursive=False):
+    if not recursive:
+        folders = sorted(glob(os.path.join(root_dir, f"*.{fmt}")))
+    else:
+        folders = sorted(glob(
+            os.path.join(root_dir, f"**/*.{fmt}"), recursive=True))
     return folders
