@@ -30,6 +30,9 @@ def main():
     parser.add_argument('--num', type=int, default=-1,
                         help="Maximum number of frames")
 
+    parser.add_argument('--base', type=int, default=1,
+                        help="Base 0/1")
+
     args = parser.parse_args()
 
     # get video
@@ -65,7 +68,8 @@ def main():
             count_step += 1
             continue
 
-        outfile = os.path.join(outdir, 'frame_{:08d}.jpg'.format(idx+1))
+        out_idx = idx if args.base == 0 else idx+1
+        outfile = os.path.join(outdir, 'frame_{:08d}.jpg'.format(out_idx))
         cv2.imwrite(outfile, frame)
 
         count_step += 1
