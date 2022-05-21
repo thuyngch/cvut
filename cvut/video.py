@@ -31,10 +31,10 @@ def get_video(video_file):
     return cap, (width, height), num_frames, fps
 
 
-def create_video(out_file, out_size, fps=30):
+def create_video(out_file, out_size, fps=30, codec='MP4V'):
     dirname = os.path.dirname(out_file)
     os.makedirs(dirname, exist_ok=True)
-    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+    fourcc = cv2.VideoWriter_fourcc(*codec)
     out = cv2.VideoWriter(out_file, fourcc, fps, out_size)
     return out
 
