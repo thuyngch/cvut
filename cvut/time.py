@@ -32,6 +32,12 @@ def time2str(time_obj, fmt=TIME_FMT_SEC):
     return time_obj.strftime(fmt)
 
 
+def minus_time_str(str_time, secs, fmt):
+    new_time = datetime.strptime(str_time, fmt) - timedelta(seconds=secs)
+    new_str_time = new_time.strftime(fmt)
+    return new_str_time
+
+
 # ------------------------------------------------------------------------------
 #  Timer
 # ------------------------------------------------------------------------------
