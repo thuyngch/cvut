@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 __all__ = ["TIME_FMT_SEC", "TIME_FMT_DATE", "TIME_FMT_MIC",
            "TIME_FMT_SEC_TZ", "TIME_FMT_DATE_TZ", "TIME_FMT_MIC_TZ",
