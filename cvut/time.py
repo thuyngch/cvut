@@ -3,7 +3,7 @@ from datetime import datetime
 
 __all__ = ["TIME_FMT_SEC", "TIME_FMT_DATE", "TIME_FMT_MIC",
            "TIME_FMT_SEC_TZ", "TIME_FMT_DATE_TZ", "TIME_FMT_MIC_TZ",
-           "get_time_now", "str2time", "time2str", "Timer"]
+           "get_time_now", "str2time", "time2str", "minus_time_str", "Timer"]
 
 
 # ------------------------------------------------------------------------------
