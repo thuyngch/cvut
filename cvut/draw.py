@@ -134,7 +134,7 @@ def draw_masks_overlay(image, masks, color=None, alpha=0.5):
 # ------------------------------------------------------------------------------
 def draw_track(image, bboxes, ids, labels=None, classnames=None,
                masks=None, polygons=None, thickness=1,
-               font=_FONT, font_size=0.5, font_thickness=1):
+               color=None, font=_FONT, font_size=0.5, font_thickness=1):
     """
     image (np.uint8) shape [H,W,3], RGB image
     bboxes (np.int/np.float/list) shape [N,4], format [x1, y1, x2, y2]
@@ -151,7 +151,7 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None,
             for bbox, track_id in zip(bboxes, ids):
                 track_id = int(track_id)
                 x1, y1, x2, y2 = [int(ele) for ele in bbox]
-                _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+                _color = COLOR_DICT[track_id % len(COLOR_DICT)] if color is None else color
                 cv2.rectangle(image_, (x1, y1), (x2, y2),
                               _color, thickness=thickness)
                 cv2.putText(image_, "ID{}".format(track_id),
@@ -162,7 +162,7 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None,
                 label = int(label)
                 track_id = int(track_id)
                 x1, y1, x2, y2 = [int(ele) for ele in bbox]
-                _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+                _color = COLOR_DICT[track_id % len(COLOR_DICT)] if color is None else color
                 cv2.rectangle(image_, (x1, y1), (x2, y2),
                               _color, thickness=thickness)
                 text = "cls{}-ID{}".format(label, track_id) if classnames is None \
@@ -173,13 +173,13 @@ def draw_track(image, bboxes, ids, labels=None, classnames=None,
 
     if masks is not None:
         for track_id, mask in zip(ids, masks):
-            _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+            _color = COLOR_DICT[track_id % len(COLOR_DICT)] if color is None else color
             image_ = draw_masks_overlay(
                 image_, np.expand_dims(mask, axis=0), color=_color)
 
     if polygons is not None:
         for track_id, polygon in zip(ids, polygons):
-            _color = COLOR_DICT[track_id % len(COLOR_DICT)]
+            _color = COLOR_DICT[track_id % len(COLOR_DICT)] if color is None else color
             image_ = draw_polygons(
                 image_, [polygon], color=_color, thickness=thickness)
 
