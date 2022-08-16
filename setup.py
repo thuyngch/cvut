@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="cvut",
-    version='0.0.2',
+    version='0.0.3',
     packages=setuptools.find_packages(),
     install_requires=['shapely', 'tqdm', 'pycocotools'],
     entry_points={
