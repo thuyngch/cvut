@@ -64,3 +64,10 @@ class PostgreSQLDatabase(object):
         cursor.execute(cmd)
         self.conn.commit()
         cursor.close()
+
+    def remove_all_records(self, ):
+        cursor = self.conn.cursor()
+        cmd = f"TRUNCATE {self.table_name} DELETE FROM {self.table_name}"
+        cursor.execute(cmd)
+        self.conn.commit()
+        cursor.close()
