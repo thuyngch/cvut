@@ -20,10 +20,16 @@ class FIFOQueue(object):
         self.queue = queue_len * [None]
         self.queue_len = queue_len
 
+    def update_queue_len(self, queue_len):
+        self.queue_len = queue_len
+
     def push(self, item):
         overflow_item = None
-        if len(self.queue) == self.queue_len:
-            overflow_item = self.pop()
+        while True:
+            if len(self.queue) >= self.queue_len:
+                overflow_item = self.pop()
+            else:
+                break
 
         self.queue.append(item)
         return overflow_item
