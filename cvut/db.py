@@ -65,6 +65,17 @@ class PostgreSQLDatabase(object):
         self.conn.commit()
         cursor.close()
 
+    def query_records(self, **kwargs):
+        cursor = self.conn.cursor()
+        conditions = [f"{key}={val}" for key, val in kwargs.items()]
+        conditions = " AND ".join(conditions)
+        cmd = f"SELECT * FROM {self.table_name} WHERE {conditions} ORDER BY time"
+        cursor.execute(cmd)
+        records = cursor.fetchall()
+        colnames = [desc[0] for desc in cursor.description]
+        cursor.close()
+        return records, colnames
+
     def remove_all_records(self, ):
         cursor = self.conn.cursor()
         cmd = f"TRUNCATE {self.table_name}"
