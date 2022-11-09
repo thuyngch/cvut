@@ -82,3 +82,9 @@ class PostgreSQLDatabase(object):
         cursor.execute(cmd)
         self.conn.commit()
         cursor.close()
+
+    def remove_one_record(self, id):
+        cur = self.conn.cursor()
+        cur.execute(f"DELETE FROM {self.table_name} WHERE id = '{id}'")
+        self.conn.commit()
+        cur.close()
