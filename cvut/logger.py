@@ -44,7 +44,8 @@ class Logger(logging.Logger):
             logfile = os.path.join(logdir, "%s.log" % (logname))
             filehandler = TimedRotatingFileHandler(
                 logfile, when=when, backupCount=backupCount)
-            filehandler.suffix = "%Y%m%d%H"
+            self.suffix = "%Y-%m-%d_%H-%M-%S"
+            self.extMatch = r"^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(\.\w+)?$"
             filehandler.setLevel(logging.INFO)
             filehandler.setFormatter(formatter)
 
