@@ -1,6 +1,7 @@
 import os
 import cv2
 import argparse
+import numpy as np
 from tqdm import tqdm
 
 
@@ -30,8 +31,11 @@ def main():
     parser.add_argument('--num', type=int, default=-1,
                         help="Maximum number of frames")
 
-    parser.add_argument('--base', type=int, default=1,
+    parser.add_argument('--base', type=int, default=0,
                         help="Base 0/1")
+
+    parser.add_argument('--txt-frames', type=str, default=None,
+                        help="Txt file containing frames to extract")
 
     args = parser.parse_args()
 
@@ -51,13 +55,30 @@ def main():
     step = args.step
     max_num_frames = args.num if args.num != -1 else num_frames
 
+    # txt frames
+    selected_frames = None
+    if args.txt_frames is not None:
+        selected_frames = np.loadtxt(args.txt_frames, dtype=int)
+        print(f"Selected frames: {selected_frames}")
+        max_num_frames = num_frames
+
     # extract frames
     num_get_frames = 0
     count_step = 0
     for idx in tqdm(range(num_frames), total=num_frames):
+
+        out_idx = idx if args.base == 0 else idx+1
+
         status, frame = cap.read()
         if not status:
             break
+
+        if selected_frames is not None:
+            if idx in selected_frames:
+                outfile = os.path.join(outdir,
+                                       'frame_{:08d}.jpg'.format(out_idx))
+                cv2.imwrite(outfile, frame)
+            continue
 
         if idx < start:
             print(f"Skip frame {idx}")
@@ -68,7 +89,6 @@ def main():
             count_step += 1
             continue
 
-        out_idx = idx if args.base == 0 else idx+1
         outfile = os.path.join(outdir, 'frame_{:08d}.jpg'.format(out_idx))
         cv2.imwrite(outfile, frame)
 
