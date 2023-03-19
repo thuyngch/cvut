@@ -13,6 +13,13 @@ class PostgreSQLDatabase(object):
         self.conn = psycopg2.connect(host=host, port=port,
                                      user=user, password=password,
                                      database=db_name)
+        # check if table exist or not
+        cur = self.conn.cursor()
+        cur.execute(
+            "select * from information_schema.tables where table_name=%s", (self.table_name,))
+        table_existed = bool(cur.rowcount)
+        if not table_existed:
+            raise RuntimeError(f"table {self.table_name} does not exist")
 
     def get_uuid(self, ):
         id = str(uuid.uuid4())
