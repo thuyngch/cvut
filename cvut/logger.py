@@ -22,6 +22,7 @@ def basename(filepath, wo_fmt=False):
         bname = '.'.join(bname.split('.')[:-1])
     return bname
 
+
 class CustomTimedRotatingFileHandler(TimedRotatingFileHandler):
     def doRollover(self):
         """
@@ -62,7 +63,7 @@ class CustomTimedRotatingFileHandler(TimedRotatingFileHandler):
         newRolloverAt = self.computeRollover(currentTime)
         while newRolloverAt <= currentTime:
             newRolloverAt = newRolloverAt + self.interval
-        #If DST changes and midnight or weekly rollover, adjust for this.
+        # If DST changes and midnight or weekly rollover, adjust for this.
         if (self.when == 'MIDNIGHT' or self.when.startswith('W')) and not self.utc:
             dstAtRollover = time.localtime(newRolloverAt)[-1]
             if dstNow != dstAtRollover:
@@ -73,11 +74,17 @@ class CustomTimedRotatingFileHandler(TimedRotatingFileHandler):
                 newRolloverAt += addend
         self.rolloverAt = newRolloverAt
 
+
 # ------------------------------------------------------------------------------
 #   Logger
 # ------------------------------------------------------------------------------
 class Logger(logging.Logger):
-    def __init__(self, logname, logdir=None, when='H', backupCount=24*7):
+    def __init__(self,
+                 logname,
+                 logdir=None,
+                 when='H',
+                 backupCount=24*7,
+                 with_pid=False):
         # Workdir
         self.logname = logname
         self.logdir = logdir
@@ -92,7 +99,11 @@ class Logger(logging.Logger):
             "%(asctime)s-%(levelname)s-%(name)s-%(filename)s-%(lineno)d: %(message)s")
 
         if logdir is not None:
-            logfile = os.path.join(logdir, "%s.log" % (logname))
+            if with_pid:
+                pid = os.getpid()
+                logfile = os.path.join(logdir, f"{logname}.{pid}.log")
+            else:
+                logfile = os.path.join(logdir, f"{logname}.log")
             filehandler = CustomTimedRotatingFileHandler(
                 logfile, when=when, backupCount=backupCount)
             filehandler.setLevel(logging.INFO)
