@@ -3,8 +3,10 @@
 # ------------------------------------------------------------------------------
 import os
 import cv2
+import sys
 import time
 import logging
+import linecache
 import numpy as np
 from logging.handlers import TimedRotatingFileHandler
 
@@ -155,3 +157,13 @@ class Logger(logging.Logger):
             np.save(embed_file, embed)
 
         return img_file
+
+    def log_exception(self):
+        exc_type, exc_obj, tb = sys.exc_info()
+        f = tb.tb_frame
+        lineno = tb.tb_lineno
+        filename = f.f_code.co_filename
+        linecache.checkcache(filename)
+        line = linecache.getline(filename, lineno, f.f_globals)
+        self.error('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(
+            filename, lineno, line.strip(), exc_obj))
