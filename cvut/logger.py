@@ -158,7 +158,7 @@ class Logger(logging.Logger):
 
         return img_file
 
-    def log_exception(self):
+    def _log_exception(self):
         exc_type, exc_obj, tb = sys.exc_info()
         f = tb.tb_frame
         lineno = tb.tb_lineno
@@ -167,3 +167,8 @@ class Logger(logging.Logger):
         line = linecache.getline(filename, lineno, f.f_globals)
         self.error('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(
             filename, lineno, line.strip(), exc_obj))
+
+    def error(self, message, detail=False):
+        super(Logger, self).error(message)
+        if detail:
+            self._log_exception()
