@@ -74,7 +74,11 @@ class PostgreSQLDatabase(object):
 
     def query_records(self, **kwargs):
         cursor = self.conn.cursor()
-        conditions = [f"{key}={val}" for key, val in kwargs.items()]
+        conditions = []
+        for key, val in kwargs.items():
+            if isinstance(val, str):
+                val = f"'{val}'"
+            conditions.append(f"{key}={val}")
         conditions = " AND ".join(conditions)
         cmd = f"SELECT * FROM {self.table_name} WHERE {conditions} ORDER BY time"
         cursor.execute(cmd)
