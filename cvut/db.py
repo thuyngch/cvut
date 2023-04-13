@@ -1,5 +1,6 @@
 import uuid
 import psycopg2
+from psycopg2.extras import Json
 from psycopg2.extras import execute_values
 
 
@@ -46,7 +47,12 @@ class PostgreSQLDatabase(object):
     def insert_record(self, **kwargs):
         cursor = self.conn.cursor()
         keys = list(kwargs.keys())
-        vals = list(kwargs.values())
+        vals = []
+        for val in kwargs.values():
+            if isinstance(val, dict):
+                vals.append(Json(val))
+            else:
+                vals.append(val)
         cmd = f"INSERT INTO {self.table_name} ({', '.join(keys)}) VALUES %s"
         execute_values(cursor, cmd, [vals])
         self.conn.commit()
