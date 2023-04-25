@@ -150,6 +150,16 @@ def check_expire(start_date, valid_duration, mode='local'):
             return result_online
 
 
+def validate_time_expire(start_date, duration, mode):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            if not check_expire(start_date, duration, mode)['valid']:
+                raise ValueError("Time expiration")
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 # ------------------------------------------------------------------------------
 #  Main execution
 # ------------------------------------------------------------------------------
