@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="cvut",
-    version='0.1.12',
+    version='0.1.13',
     packages=setuptools.find_packages(),
     entry_points={
         "console_scripts": [

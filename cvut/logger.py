@@ -5,6 +5,7 @@ import os
 import cv2
 import sys
 import time
+import json
 import logging
 import linecache
 import numpy as np
@@ -12,7 +13,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 from .time import get_time_now
 
-__all__ = ["Logger", "basename"]
+__all__ = ["Logger", "basename", "print_dict_beauty"]
 
 
 # ------------------------------------------------------------------------------
@@ -23,6 +24,10 @@ def basename(filepath, wo_fmt=False):
     if wo_fmt:
         bname = '.'.join(bname.split('.')[:-1])
     return bname
+
+
+def print_dict_beauty(dict_data, indent=4):
+    print(json.dumps(dict_data, indent=indent))
 
 
 class CustomTimedRotatingFileHandler(TimedRotatingFileHandler):
