@@ -1,6 +1,8 @@
 # pip install ntplib, bs4
 import datetime
 import requests
+import platform
+import subprocess
 from ntplib import NTPClient
 from bs4 import BeautifulSoup
 from datetime import date as localdate, timezone
@@ -17,6 +19,10 @@ usr_agent = {
     'Accept-Language': 'en-US,en;q=0.8',
     'Connection': 'keep-alive',
 }
+
+
+def is_aarch64():
+    return platform.uname()[4] == 'aarch64'
 
 
 def _website_1(is_visualize=False):
@@ -156,6 +162,33 @@ def validate_time_expire(start_date, duration, mode):
             if not check_expire(start_date, duration, mode)['valid']:
                 raise ValueError("Time expiration")
             return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def validate_uuid(uuid):
+    """Validate UUID
+    Args:
+        uuid (str): UUID
+    Returns:
+        decorator: original function if the UUID is valid
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            if is_aarch64():
+                output = subprocess.check_output(
+                    ["cat", "/proc/device-tree/serial-number"],
+                    universal_newlines=True)
+            else:
+                output = subprocess.check_output(
+                    ["cat", "/sys/class/dmi/id/product_uuid"],
+                    universal_newlines=True)
+
+            product_uuid = output.strip()
+            if product_uuid == uuid:
+                return func(*args, **kwargs)
+            else:
+                raise ValueError("UUID is not valid")
         return wrapper
     return decorator
 
