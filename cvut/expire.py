@@ -184,7 +184,7 @@ def validate_uuid(uuid):
                     ["cat", "/sys/class/dmi/id/product_uuid"],
                     universal_newlines=True)
 
-            product_uuid = output.strip()
+            product_uuid = output.strip().rstrip('\x00')
             if product_uuid == uuid:
                 return func(*args, **kwargs)
             else:
