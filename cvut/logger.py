@@ -2,13 +2,11 @@
 #   Libraries
 # ------------------------------------------------------------------------------
 import os
-import cv2
 import sys
 import time
 import json
 import logging
 import linecache
-import numpy as np
 from logging.handlers import TimedRotatingFileHandler
 
 from .time import get_time_now
@@ -135,33 +133,6 @@ class Logger(logging.Logger):
         img_file = self.save_img(img, cate='error', filename=filename)
         self.info("Image yielding the Error-%d is saved at %s" %
                   (self.error_id, img_file))
-
-    def save_img(self, img, embed=None, cate=None, sub_cate=None,
-                 filename=None, sep_date=False):
-        # get folder
-        if cate is not None:
-            folder = os.path.join(self.logdir, cate)
-            if sep_date:
-                folder = os.path.join(folder, get_time_now("%Y-%m-%d"))
-            if sub_cate is not None:
-                folder = os.path.join(folder, sub_cate)
-            os.makedirs(folder, exist_ok=True)
-        else:
-            folder = self.logdir
-
-        # get img_file
-        if filename is not None:
-            img_file = os.path.join(folder, filename)
-        else:
-            img_file = os.path.join(folder, "{}.jpg".format(get_time_now()))
-
-        # save img and embed
-        cv2.imwrite(img_file, img)
-        if embed is not None:
-            embed_file = img_file.replace('.jpg', '.npy')
-            np.save(embed_file, embed)
-
-        return img_file
 
     def _log_exception(self):
         exc_type, exc_obj, tb = sys.exc_info()
